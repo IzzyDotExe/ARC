@@ -20,7 +20,7 @@ namespace ARC.Modules
 
         public UptimeService UptimeService { get; set; }
 
-        public UtilitiesModule() : base("Utilities") {
+        public UtilitiesModule() : base() {
             ClientInstance.ComponentInteractionCreated += ClientInstance_ComponentInteractionCreated;
         }
 

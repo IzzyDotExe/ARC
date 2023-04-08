@@ -77,7 +77,7 @@ public class Arc
         
         _arcDbContext = new ArcDbContext(_globalConfig.GetSection("db:dbstring").Value?? "none");
 
-        // StartDiscordBot(_globalConfig).GetAwaiter().GetResult();
+        StartDiscordBot(_globalConfig).GetAwaiter().GetResult();
 
     }
 
@@ -102,6 +102,7 @@ public class Arc
         ServiceProvider.GetRequiredService<UptimeService>();
         ServiceProvider.GetRequiredService<ModMailService>();
         ServiceProvider.GetRequiredService<SlashCommandsService>();
+        ServiceProvider.GetRequiredService<InteractionService>();
 
         // Connect to discord!
         await _clientInstance.ConnectAsync();
@@ -144,6 +145,7 @@ public class Arc
             .AddSingleton<UptimeService>()
             .AddSingleton<ModMailService>()
             .AddSingleton<SlashCommandsService>()
+            .AddSingleton<InteractionService>()
             .BuildServiceProvider();
 
         return services;

@@ -370,6 +370,14 @@ public class UserNote
     public DiscordUser Author => Arc.ClientInstance.GetUserAsync((ulong)AuthorSnowflake).GetAwaiter().GetResult();
     public DiscordMember AuthorMember => Guild.GetMemberAsync(Author.Id).GetAwaiter().GetResult();
 
+    internal DiscordEmbedBuilder CreateEmbedPage()
+    {
+        return new DiscordEmbedBuilder()
+            .WithAuthor($"{User} Note #{NoteId}", null, User.GetAvatarUrl(ImageFormat.Auto))
+            .WithDescription($"```{Note}```")
+            .WithTimestamp(DateAdded)
+            .WithFooter($"Note added by {Author.Username}#{Author.Discriminator}", Author.GetAvatarUrl(ImageFormat.Auto));
+    }
 }
 
 

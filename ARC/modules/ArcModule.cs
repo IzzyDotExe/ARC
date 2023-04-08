@@ -20,13 +20,13 @@ namespace ARC.Modules
         protected readonly DiscordClient ClientInstance;
         protected readonly IConfigurationRoot GlobalConfig;
 
-        protected ArcModule(string serviceName)
+        protected ArcModule()
         {
             DbContext = Arc.Arc.ArcDbContext;
             ServiceProvider = Arc.Arc.ServiceProvider;
             ClientInstance = Arc.Arc.ClientInstance;
             GlobalConfig = Arc.Arc.GlobalConfig;
-            Log.Logger.Information($"MODULE LOADED: {serviceName}");
         }
+        
     }
 }
