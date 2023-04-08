@@ -221,7 +221,7 @@ public class Modmail
         var buttons = new List<DiscordButtonComponent>() {
                                 new DiscordButtonComponent(ButtonStyle.Secondary, $"modmail.save.{ModmailId}", "Save and Close", emoji: new DiscordComponentEmoji("📝")),
                                 new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.close.{ModmailId}", "Close", emoji: new DiscordComponentEmoji("🔒")),
-                                //new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.ban.{ModmailId}", "Ban", emoji: new DiscordComponentEmoji("🔨"))
+                                new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.ban.{ModmailId}", "Ban", emoji: new DiscordComponentEmoji("🔨"))
                             };
 
         DiscordMessageBuilder message = new DiscordMessageBuilder()
@@ -233,8 +233,8 @@ public class Modmail
 
     public async Task SaveTranscript()
     {
-        File.Delete("./temp/transcript.html");
-        File.Copy("./template.html", "./temp/transcript.html");
+        File.Delete($"./temp/transcript-{ModmailId}.html");
+        File.Copy("./template.html", $"./temp/transcript-{ModmailId}.html");
 
         IReadOnlyList<DiscordMessage> msgs = await Channel.GetMessagesAsync(2000);
 
@@ -242,7 +242,7 @@ public class Modmail
         {
             var message = msgs[i];
 
-            await File.AppendAllTextAsync("./temp/transcript.html",
+            await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html",
 
             $@"
 
@@ -272,7 +272,7 @@ public class Modmail
 
         }
 
-        await File.AppendAllTextAsync("./temp/transcript.html", @"</div>
+        await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", @"</div>
                             </body>
                             </html>");
     }

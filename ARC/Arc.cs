@@ -2,7 +2,9 @@
 using Arc.Exceptions;
 using Arc.Schema;
 using Arc.Services;
+using ARC.Services;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,6 +101,7 @@ public class Arc
         // Run any necessary steps before starting the bot here.
         ServiceProvider.GetRequiredService<UptimeService>();
         ServiceProvider.GetRequiredService<ModMailService>();
+        ServiceProvider.GetRequiredService<SlashCommandsService>();
 
         // Connect to discord!
         await _clientInstance.ConnectAsync();
@@ -113,6 +116,7 @@ public class Arc
         { 
             Log.Logger.Information($"Logged in as {sender.CurrentUser}");
             Log.Logger.Information($"Ready!");
+            // ClientInstance.BulkOverwriteGlobalApplicationCommandsAsync(new List<DiscordApplicationCommand>() { });
         });
     }
 
@@ -139,6 +143,7 @@ public class Arc
             .AddSingleton<IConfigurationRoot>(settings)
             .AddSingleton<UptimeService>()
             .AddSingleton<ModMailService>()
+            .AddSingleton<SlashCommandsService>()
             .BuildServiceProvider();
 
         return services;
