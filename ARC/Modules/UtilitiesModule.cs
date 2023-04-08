@@ -21,8 +21,14 @@ namespace ARC.Modules
         public UptimeService UptimeService { get; set; }
 
         public UtilitiesModule() : base("Utilities") {
+            
+        }
+
+        protected override void RegisterEvents()
+        {
             ClientInstance.ComponentInteractionCreated += ClientInstance_ComponentInteractionCreated;
         }
+
 
         #region Utilities commands
 
@@ -171,7 +177,6 @@ namespace ARC.Modules
 
         }
 
-
         [SlashCommand("GetConfig", "Set a config string"),
          SlashCommandPermissions(Permissions.ManageGuild)]
         public async Task GetConfigCommand(InteractionContext ctx, [Option("key", "The key name of the config string")] string configKey)
@@ -200,8 +205,6 @@ namespace ARC.Modules
             await ctx.CreateResponseAsync(response);
 
         }
-
-
 
         #endregion
 

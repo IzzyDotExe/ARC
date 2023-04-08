@@ -102,6 +102,7 @@ public class Arc
         ServiceProvider.GetRequiredService<UptimeService>();
         ServiceProvider.GetRequiredService<ModMailService>();
         ServiceProvider.GetRequiredService<SlashCommandsService>();
+        ServiceProvider.GetRequiredService<InteractionService>();
 
         // Connect to discord!
         await _clientInstance.ConnectAsync();
@@ -144,6 +145,7 @@ public class Arc
             .AddSingleton<UptimeService>()
             .AddSingleton<ModMailService>()
             .AddSingleton<SlashCommandsService>()
+            .AddSingleton<InteractionService>()
             .BuildServiceProvider();
 
         return services;
