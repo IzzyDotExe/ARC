@@ -16,16 +16,20 @@ namespace ARC.Modules
 {
     internal class ModerationModule : ArcModule
     {
-
         public InteractionService InteractivityService { get; set; }
         
-        public ModerationModule() : base() {
+        public ModerationModule() : base("Moderation") {
 
+        }
+
+        protected override void RegisterEvents()
+        {
+            
             ClientInstance.ComponentInteractionCreated += ClientInstance_ComponentInteractionCreated;
             ClientInstance.ModalSubmitted += HandleUserNotesModal;
 
         }
-        
+
         [ContextMenu(DSharpPlus.ApplicationCommandType.UserContextMenu, "User Notes", false),
          SlashCommandPermissions(DSharpPlus.Permissions.ManageMessages)]
         public async Task UserNotes(ContextMenuContext ctx)
@@ -217,7 +221,6 @@ namespace ARC.Modules
                 await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
             }
          */
-        
         
     }
 }

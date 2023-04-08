@@ -20,9 +20,15 @@ namespace ARC.Modules
 
         public UptimeService UptimeService { get; set; }
 
-        public UtilitiesModule() : base() {
+        public UtilitiesModule() : base("Utilities") {
+            
+        }
+
+        protected override void RegisterEvents()
+        {
             ClientInstance.ComponentInteractionCreated += ClientInstance_ComponentInteractionCreated;
         }
+
 
         #region Utilities commands
 

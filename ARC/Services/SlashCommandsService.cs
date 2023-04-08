@@ -28,6 +28,9 @@ namespace ARC.Services
             // Register slash command modules here
             slashCommands.RegisterCommands<UtilitiesModule>(707260999496892436);
             slashCommands.RegisterCommands<ModerationModule>(707260999496892436);
+            slashCommands.RegisterCommands<UtilitiesModule>(975717691564376084);
+            slashCommands.RegisterCommands<ModerationModule>(975717691564376084);
+
             slashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
         }
 
