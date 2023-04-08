@@ -70,6 +70,11 @@ public class ArcDbContext : DbContext
         await SaveChangesAsync();
     }
 
+    public List<UserNote> GetUserNotes(ulong userSnowflake)
+    {
+        var notes = UserNotes.Where(x => x.UserSnowflake == (long)userSnowflake).ToList();
+        return notes;
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql(new NpgsqlConnection(DbPath));

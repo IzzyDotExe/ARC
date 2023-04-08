@@ -171,7 +171,6 @@ namespace ARC.Modules
 
         }
 
-
         [SlashCommand("GetConfig", "Set a config string"),
          SlashCommandPermissions(Permissions.ManageGuild)]
         public async Task GetConfigCommand(InteractionContext ctx, [Option("key", "The key name of the config string")] string configKey)
@@ -200,8 +199,6 @@ namespace ARC.Modules
             await ctx.CreateResponseAsync(response);
 
         }
-
-
 
         #endregion
 
