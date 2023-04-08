@@ -57,6 +57,8 @@ namespace ARC.Modules
             ulong userSnowflake = ulong.Parse(eventArgs.Id.Split('.')[1]);
             List<UserNote> notes = DbContext.GetUserNotes(userSnowflake, eventArgs.Guild.Id);
 
+
+
         }
     }
 }
