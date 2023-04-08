@@ -1,4 +1,6 @@
-﻿using Arc.Services;
+﻿using Arc.Schema;
+using Arc.Services;
+using DocumentFormat.OpenXml.Office.CustomUI;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
@@ -21,6 +23,8 @@ namespace ARC.Modules
         public UtilitiesModule() : base("Utilities") {
             ClientInstance.ComponentInteractionCreated += ClientInstance_ComponentInteractionCreated;
         }
+
+        #region Utilities commands
 
         [SlashCommand("Ping", "Gets the latency numbers related to the bot.")]
         public async Task PingCommand(InteractionContext ctx)
@@ -131,6 +135,75 @@ namespace ARC.Modules
             }
  
         }
+
+        #endregion
+
+        #region server management
+
+        [SlashCommand("SetConfig", "Set a config string"),
+         SlashCommandPermissions(Permissions.ManageGuild)]
+        public async Task SetConfigCommand(InteractionContext ctx, [Option("key", "The key name of the config string")] string configKey, [Option("value", "The value of the config string")] string configValue)
+        {
+            var config = DbContext.GuildConfigs.Where(c => c.ConfigGuildSnowflake == (long)ctx.Guild.Id && c.ConfigKey.Equals(configKey));
+
+            if (config.Any())
+                config.First().ConfigValue = configValue;
+            else
+            {
+                GuildConfig configin = new((long)ctx.Guild.Id, configKey, configValue);
+                DbContext.GuildConfigs.Add(configin);
+       
+            }
+
+            await DbContext.SaveChangesAsync();
+
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle("Config update was successful!")
+                .WithDescription($"``{configKey} --> {configValue}``");
+
+            var response = new DiscordInteractionResponseBuilder()
+            {
+                IsEphemeral = true
+            }
+            .AddEmbed(embed);
+
+            await ctx.CreateResponseAsync(response);
+
+        }
+
+
+        [SlashCommand("GetConfig", "Set a config string"),
+         SlashCommandPermissions(Permissions.ManageGuild)]
+        public async Task GetConfigCommand(InteractionContext ctx, [Option("key", "The key name of the config string")] string configKey)
+        {
+            var config = DbContext.GuildConfigs.Where(c => c.ConfigGuildSnowflake == (long)ctx.Guild.Id && c.ConfigKey.Equals(configKey));
+            string? configvalue = null;
+            string descriptionString;
+            if (config.Any())
+                configvalue = config.First().ConfigValue;
+
+            descriptionString = $"``{configKey}`` is currently set to ``{configvalue}``";
+
+            if (configvalue == null || string.IsNullOrWhiteSpace(configvalue) || configvalue.ToLower().Equals("null"))
+                descriptionString = $"``{configKey}`` is not currently set to anything";
+
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle($"Config for {ctx.Guild}")
+                .WithDescription(descriptionString);
+
+            var response = new DiscordInteractionResponseBuilder()
+            {
+                IsEphemeral = true
+            }
+            .AddEmbed(embed);
+
+            await ctx.CreateResponseAsync(response);
+
+        }
+
+
+
+        #endregion
 
     }
 }
