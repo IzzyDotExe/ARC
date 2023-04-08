@@ -169,10 +169,9 @@ public class ModMailService : ArcService
 
         // TODO: SAVE TO DATABASE AND DISPLAY FOR USER DASHBOARD INSTEAD
         var transcrpt = await ClientInstance.GetChannelAsync(ulong.Parse(DbContext.Config[modmail.Guild.Id]["transcriptchannel"]));
-        var filestream = new MemoryStream(await File.ReadAllBytesAsync("./temp/transcript.html"));
 
         var msg = new DiscordMessageBuilder();
-        msg.AddFile(new FileStream("./temp/transcript.html", FileMode.OpenOrCreate));
+        msg.AddFile(new FileStream($"./temp/transcript-{modmail.ModmailId}.html", FileMode.OpenOrCreate));
 
         var embed = new DiscordEmbedBuilder()
             .WithModmailStyle()

@@ -39,7 +39,7 @@ namespace ARC.Services
             var errorEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Error!")
                 .WithColor(DiscordColor.Red)
-                .WithDescription($"***An error occured! Please report this to your server admin or the Izzy***\n```{args.Exception}```");
+                .WithDescription($"***An error occured! Please report this to your server admin or Izzy***\n```{args.Exception}```");
 
             await args.Context.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                 .AddEmbed(errorEmbed)
