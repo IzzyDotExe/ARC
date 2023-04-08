@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Arc.Exceptions;
 using ARC.Extensions;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -70,9 +71,9 @@ public class ArcDbContext : DbContext
         await SaveChangesAsync();
     }
 
-    public List<UserNote> GetUserNotes(ulong userSnowflake)
+    public List<UserNote> GetUserNotes(ulong userSnowflake, ulong guildSnowflake)
     {
-        var notes = UserNotes.Where(x => x.UserSnowflake == (long)userSnowflake).ToList();
+        var notes = UserNotes.Where(x => x.UserSnowflake == (long)userSnowflake && x.GuildSnowflake == (long)guildSnowflake).ToList();
         return notes;
     }
 
@@ -342,13 +343,15 @@ public class UserNote
     
     public long NoteId { get; }
     public long UserSnowflake { get; set; }
+    public long GuildSnowflake { get; set; }
     public string Note { get; set; }
     public DateTime DateAdded { get; set; }
     public long AuthorSnowflake { get; set; }
 
-    public UserNote(long userSnowflake, string note, DateTime dateAdded, long authorSnowflake)
+    public UserNote(long guildSnowflake, long userSnowflake, string note, DateTime dateAdded, long authorSnowflake)
     {
 
+        GuildSnowflake = guildSnowflake;
         UserSnowflake = userSnowflake;
         Note = note;
         DateAdded = dateAdded;
@@ -360,6 +363,12 @@ public class UserNote
     {
         
     }
+
+    public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
+    public DiscordGuild Guild => Arc.ClientInstance.GetGuildAsync((ulong)GuildSnowflake).GetAwaiter().GetResult();
+    public DiscordMember Member => Guild.GetMemberAsync(User.Id).GetAwaiter().GetResult();
+    public DiscordUser Author => Arc.ClientInstance.GetUserAsync((ulong)AuthorSnowflake).GetAwaiter().GetResult();
+    public DiscordMember AuthorMember => Guild.GetMemberAsync(Author.Id).GetAwaiter().GetResult();
 
 }
 

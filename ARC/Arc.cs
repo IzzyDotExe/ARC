@@ -77,7 +77,7 @@ public class Arc
         
         _arcDbContext = new ArcDbContext(_globalConfig.GetSection("db:dbstring").Value?? "none");
 
-        StartDiscordBot(_globalConfig).GetAwaiter().GetResult();
+        // StartDiscordBot(_globalConfig).GetAwaiter().GetResult();
 
     }
 
