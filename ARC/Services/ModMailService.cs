@@ -22,7 +22,12 @@ public class ModMailService : ArcService
 
     private async Task ClientInstance_ComponentInteractionCreated(DiscordClient sender, ComponentInteractionCreateEventArgs args)
     {
+        
         var eventId = args.Id;
+
+        if (!eventId.StartsWith("modmail"))
+            return;
+        
         var eventAction = ClientInstance.GetEventAction(eventId);
 
         if (eventAction == null)

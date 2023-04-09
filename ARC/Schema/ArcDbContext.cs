@@ -77,6 +77,11 @@ public class ArcDbContext : DbContext
         return notes;
     }
 
+    public List<Appeal> GetNextAppeal(ulong userSnowflake)
+    {
+        return Appeals.ToList().Where(x => x.UserSnowflake == (long)userSnowflake).ToList();
+    }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql(new NpgsqlConnection(DbPath));
 
@@ -334,7 +339,7 @@ public class Appeal
     {
         
     }
-    
+    public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
 }
 
 [PrimaryKey("NoteId")]

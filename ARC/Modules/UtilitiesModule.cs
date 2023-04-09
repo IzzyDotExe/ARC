@@ -206,6 +206,29 @@ namespace ARC.Modules
 
         }
 
+        [SlashCommand("BanAppealMsg", "Send the ban appeal message"),
+         SlashCommandPermissions(Permissions.Administrator)]
+        public async Task BanAppealMessage(InteractionContext ctx)
+        {
+            
+            DiscordEmbed embedBuild = new DiscordEmbedBuilder()
+                .WithColor(DiscordColor.DarkRed)
+                .WithTitle("Ban Appeal")
+                .WithDescription("Welcome to the Billie Eilish ban appeal server.\n\nTo open a ban appeal, please click the button below.")
+                .WithThumbnail("https://www.pngkey.com/png/full/382-3821512_tak-icon-hammer-01-hammer.png")
+                .Build();
+
+            var buttons = new List<DiscordButtonComponent>() {
+                new DiscordButtonComponent(ButtonStyle.Primary, $"banappeal.send", "Open A Ban Appeal")
+            };
+
+            var message = new DiscordMessageBuilder().WithEmbed(embedBuild).AddComponents(buttons);
+
+            await ctx.Channel.SendMessageAsync(message);
+            await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Success!").AsEphemeral(true));
+
+        }
+        
         #endregion
 
     }
