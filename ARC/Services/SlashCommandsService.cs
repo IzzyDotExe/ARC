@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus.EventArgs;
 
 namespace ARC.Services
 {
@@ -26,12 +27,16 @@ namespace ARC.Services
             var slashCommands = ClientInstance.UseSlashCommands(slashCommandsConfig);
 
             // Register slash command modules here
-            slashCommands.RegisterCommands<UtilitiesModule>(707260999496892436);
-            slashCommands.RegisterCommands<ModerationModule>(707260999496892436);
-            slashCommands.RegisterCommands<UtilitiesModule>(975717691564376084);
-            slashCommands.RegisterCommands<ModerationModule>(975717691564376084);
+            slashCommands.RegisterCommands<UtilitiesModule>();
+            slashCommands.RegisterCommands<ModerationModule>();
 
             slashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
+            ClientInstance.ClientErrored += ClientInstanceOnClientErrored;
+        }
+
+        private async Task ClientInstanceOnClientErrored(DiscordClient sender, ClientErrorEventArgs args)
+        {
+            Log.Logger.Error(args.Exception.ToString());
         }
 
         private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, DSharpPlus.SlashCommands.EventArgs.SlashCommandErrorEventArgs args)

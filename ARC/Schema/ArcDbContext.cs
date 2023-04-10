@@ -77,6 +77,11 @@ public class ArcDbContext : DbContext
         return notes;
     }
 
+    public List<Appeal> GetNextAppeal(ulong userSnowflake)
+    {
+        return Appeals.ToList().Where(x => x.UserSnowflake == (long)userSnowflake).ToList();
+    }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql(new NpgsqlConnection(DbPath));
 
@@ -130,21 +135,15 @@ public class Modmail
             $"Modmail with user: {User}"
         );
 
-        ChannelSnowflake = (long)mailChannel.Id;
-        Uri avatarUri = new Uri(User.GetAvatarUrl(DSharpPlus.ImageFormat.Auto));
+        
         DiscordWebhook discordWebhook;
-        using (var httpClient = new HttpClient())
-        {
-            var uriWoQuery = avatarUri.GetLeftPart(UriPartial.Path);
-            var fileExt = Path.GetExtension(uriWoQuery);
-
-            var path = Path.Combine(Path.GetTempPath(), $"avatar{fileExt}");
-            var imageBytes = await httpClient.GetByteArrayAsync(avatarUri);
-            Stream filestream = new MemoryStream(imageBytes);
-            discordWebhook = await mailChannel.CreateWebhookAsync(User.Username, avatar: filestream);
-        }
+        discordWebhook = await mailChannel.CreateWebhookAsync(User.Username);
+        
+        ChannelSnowflake = (long)mailChannel.Id;
         WebhookSnowflake = (long)discordWebhook.Id;
-
+                
+        await Arc.ArcDbContext.Modmails.AddAsync(this);
+        await Arc.ArcDbContext.SaveChangesAsync();
         return true;
 
     }
@@ -227,7 +226,7 @@ public class Modmail
         var buttons = new List<DiscordButtonComponent>() {
                                 new DiscordButtonComponent(ButtonStyle.Secondary, $"modmail.save.{ModmailId}", "Save and Close", emoji: new DiscordComponentEmoji("📝")),
                                 new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.close.{ModmailId}", "Close", emoji: new DiscordComponentEmoji("🔒")),
-                                new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.ban.{ModmailId}", "Ban", emoji: new DiscordComponentEmoji("🔨"))
+                                //new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.ban.{ModmailId}", "Ban", emoji: new DiscordComponentEmoji("🔨"))
                             };
 
         DiscordMessageBuilder message = new DiscordMessageBuilder()
@@ -284,7 +283,7 @@ public class Modmail
     }
 
     public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
-    public DiscordWebhook Webhook => Arc.ClientInstance.GetWebhookAsync((ulong) WebhookSnowflake).GetAwaiter().GetResult();
+    public DiscordWebhook Webhook => Channel.GetWebhooksAsync().GetAwaiter().GetResult()[0];
     public DiscordChannel Channel => Arc.ClientInstance.GetChannelAsync((ulong)ChannelSnowflake).GetAwaiter().GetResult();
     public DiscordGuild Guild => Arc.ClientInstance.GetGuildAsync(Channel.Guild.Id).GetAwaiter().GetResult();
     public DiscordMember Member => Guild.GetMemberAsync(User.Id).GetAwaiter().GetResult();
@@ -334,7 +333,7 @@ public class Appeal
     {
         
     }
-    
+    public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
 }
 
 [PrimaryKey("NoteId")]

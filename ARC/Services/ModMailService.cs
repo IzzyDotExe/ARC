@@ -8,6 +8,7 @@ using Serilog;
 using System;
 using System.Diagnostics.Tracing;
 using System.Linq.Dynamic.Core;
+using Arc.Exceptions;
 
 namespace Arc.Services;
 
@@ -22,7 +23,12 @@ public class ModMailService : ArcService
 
     private async Task ClientInstance_ComponentInteractionCreated(DiscordClient sender, ComponentInteractionCreateEventArgs args)
     {
+        
         var eventId = args.Id;
+
+        if (!eventId.StartsWith("modmail"))
+            return;
+        
         var eventAction = ClientInstance.GetEventAction(eventId);
 
         if (eventAction == null)
@@ -87,21 +93,19 @@ public class ModMailService : ArcService
 
             // TODO: INSERT SERVER PICKING MECHANISM HERE
             // For now we will simply choose the billie server.
-            
+            Modmail? modmail = null;
             try
             {
 
                 var guild = await sender.GetGuildAsync(ulong.Parse(GlobalConfig.GetSection("discord:guild").Value ?? "0"));
-                var modmail = new Modmail(e.Author.Id, guild);
+                modmail = new Modmail(e.Author.Id, guild);
 
                 var session = await modmail.CreateSession();
 
                 if (!session)
-                    return;
-
-                DbContext.Modmails.Add(modmail);
-                DbContext.SaveChanges();
-                
+                {
+                    throw new ArcInitFailedException("Modmail failed becase the session could not be created!");
+                }
 
                 await modmail.SendUserSystem("Your mod mail request was recieved! Please wait and a staff member will contact you shortly!");
                 await modmail.SendModmailMenu();
@@ -110,6 +114,11 @@ public class ModMailService : ArcService
 
                 Log.Logger.Error($"MODMAIL CREATION FAILED: {ex}");
 
+                if (modmail != null)
+                {
+                    DbContext.Remove(modmail);
+                    await DbContext.SaveChangesAsync();
+                }
             }
 
 
@@ -141,7 +150,7 @@ public class ModMailService : ArcService
     private async Task HandleMailChannelMessage(DiscordClient sender, MessageCreateEventArgs e)
     {
 
-        var mail = DbContext.Modmails.Where(x => x.ChannelSnowflake == (long)e.Channel.Id).ToList();
+        var mail = DbContext.Modmails.ToList().Where(x => x.ChannelSnowflake == (long)e.Channel.Id).ToList();
 
         if (!mail.Any())
             return;
@@ -169,18 +178,18 @@ public class ModMailService : ArcService
 
         // TODO: SAVE TO DATABASE AND DISPLAY FOR USER DASHBOARD INSTEAD
         var transcrpt = await ClientInstance.GetChannelAsync(ulong.Parse(DbContext.Config[modmail.Guild.Id]["transcriptchannel"]));
-
+        var transcrptfiles = await ClientInstance.GetChannelAsync(ulong.Parse(GlobalConfig.GetSection("discord:debug_log").Value));
+        
         var msg = new DiscordMessageBuilder();
         msg.AddFile(new FileStream($"./temp/transcript-{modmail.ModmailId}.html", FileMode.OpenOrCreate));
+        var debug_file = await transcrptfiles.SendMessageAsync(msg);
 
         var embed = new DiscordEmbedBuilder()
             .WithModmailStyle()
             .WithTitle("Modmail Transcirpt")
-            .WithDescription($"**Modmail with:** {modmail.User.Mention}\n**Saved** <t:{DateTimeOffset.Now.ToUnixTimeSeconds()}:R> **by** {saver.Mention}");
+            .WithDescription($"**Modmail with:** {modmail.User.Mention}\n**Saved** <t:{DateTimeOffset.Now.ToUnixTimeSeconds()}:R> **by** {saver.Mention}\n\n[Transcript]({debug_file.Attachments[0].Url})");
 
-        msg.AddEmbed(embed);
-
-        await transcrpt.SendMessageAsync(msg);
+        await transcrpt.SendMessageAsync(embed);
 
     }
 
