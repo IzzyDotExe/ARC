@@ -1,4 +1,3 @@
-﻿
 using Arc.Schema;
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
@@ -10,7 +9,9 @@ namespace ARC.Modules
 {
     internal abstract class ArcModule : ApplicationCommandModule
     {
+
         private static Dictionary<string, bool> _loadedDict = new Dictionary<string, bool>();
+
         protected readonly ArcDbContext DbContext;
         protected readonly IServiceProvider ServiceProvider;
         protected readonly DiscordClient ClientInstance;
@@ -29,8 +30,10 @@ namespace ARC.Modules
             if (_loaded)
                 return;
             RegisterEvents();
+
             Log.Logger.Information("MODULE LOADED: {ModuleName}", moduleName);
             _loadedDict[moduleName] = true;
+
         }
 
         protected abstract void RegisterEvents();
