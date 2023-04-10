@@ -1,17 +1,12 @@
 ﻿using Arc.Schema;
 using Arc.Services;
-using DocumentFormat.OpenXml.Office.CustomUI;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using System;
-using System.Collections.Generic;
+
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ARC.Modules
 {

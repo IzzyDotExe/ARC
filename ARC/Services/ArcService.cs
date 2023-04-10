@@ -1,6 +1,6 @@
 ﻿using Arc.Schema;
 using DSharpPlus;
-using DSharpPlus.Entities;
+
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
