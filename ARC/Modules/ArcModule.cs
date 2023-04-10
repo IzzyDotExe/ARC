@@ -10,8 +10,7 @@ namespace ARC.Modules
 {
     internal abstract class ArcModule : ApplicationCommandModule
     {
-
-        protected bool _loaded = false;
+        private static Dictionary<string, bool> _loadedDict = new Dictionary<string, bool>();
         protected readonly ArcDbContext DbContext;
         protected readonly IServiceProvider ServiceProvider;
         protected readonly DiscordClient ClientInstance;
@@ -19,6 +18,8 @@ namespace ARC.Modules
 
         protected ArcModule(string moduleName)
         {
+
+            var _loaded = _loadedDict.ContainsKey(moduleName);
             
             DbContext = Arc.Arc.ArcDbContext;
             ServiceProvider = Arc.Arc.ServiceProvider;
@@ -27,10 +28,9 @@ namespace ARC.Modules
 
             if (_loaded)
                 return;
-            
             RegisterEvents();
-            Log.Logger.Information($"MODULE LOADED: {moduleName}");
-            _loaded = true;
+            Log.Logger.Information("MODULE LOADED: {ModuleName}", moduleName);
+            _loadedDict[moduleName] = true;
         }
 
         protected abstract void RegisterEvents();
