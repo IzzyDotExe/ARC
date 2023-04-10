@@ -97,7 +97,7 @@ public class Arc
 
         _clientInstance = new DiscordClient(discordConfig)
         {
-            ClientVersion = "2.0"
+            ClientVersion = "2.1"
         };
         _serviceProvider = ConfigureServices(settings);
 
