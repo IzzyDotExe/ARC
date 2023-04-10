@@ -2,7 +2,9 @@
 using Arc.Exceptions;
 using Arc.Schema;
 using Arc.Services;
+using ARC.Services;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -93,18 +95,38 @@ public class Arc
             LoggerFactory = logFactory
         };
 
-        _clientInstance = new DiscordClient(discordConfig);
+        _clientInstance = new DiscordClient(discordConfig)
+        {
+            ClientVersion = "2.0"
+        };
         _serviceProvider = ConfigureServices(settings);
 
         // Run any necessary steps before starting the bot here.
         ServiceProvider.GetRequiredService<UptimeService>();
         ServiceProvider.GetRequiredService<ModMailService>();
+        ServiceProvider.GetRequiredService<SlashCommandsService>();
+        ServiceProvider.GetRequiredService<InteractionService>();
+        ServiceProvider.GetRequiredService<BanAppealService>();
+        
 
         // Connect to discord!
         await _clientInstance.ConnectAsync();
         _clientInstance.Ready += ClientInstanceOnReady;
+        _clientInstance.ClientErrored += ClientInstanceOnClientErrored;
           
         await Task.Delay(-1);
+    }
+
+    private static async Task ClientInstanceOnClientErrored(DiscordClient sender, ClientErrorEventArgs args)
+    {
+        var debug_log = await ClientInstance.GetChannelAsync(ulong.Parse(GlobalConfig.GetSection("discord:debug_log").Value));
+        var errorEmbed = new DiscordEmbedBuilder()
+            .WithTitle("Error!")
+            .WithColor(DiscordColor.Red)
+            .WithDescription($"***An error occured <t:{DateTimeOffset.Now.ToUnixTimeSeconds()}:R>!***\n```{args.Exception}```");
+
+        await debug_log.SendMessageAsync(errorEmbed);
+
     }
 
     private static async Task ClientInstanceOnReady(DiscordClient sender, ReadyEventArgs e)
@@ -113,6 +135,8 @@ public class Arc
         { 
             Log.Logger.Information($"Logged in as {sender.CurrentUser}");
             Log.Logger.Information($"Ready!");
+            //ClientInstance.BulkOverwriteGlobalApplicationCommandsAsync(new List<DiscordApplicationCommand>() { });
+            //ClientInstance.BulkOverwriteGuildApplicationCommandsAsync(975717691564376084, new List<DiscordApplicationCommand>() { });
         });
     }
 
@@ -139,6 +163,9 @@ public class Arc
             .AddSingleton<IConfigurationRoot>(settings)
             .AddSingleton<UptimeService>()
             .AddSingleton<ModMailService>()
+            .AddSingleton<SlashCommandsService>()
+            .AddSingleton<InteractionService>()
+            .AddSingleton<BanAppealService>()
             .BuildServiceProvider();
 
         return services;

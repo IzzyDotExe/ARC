@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DSharpPlus\DSharpPlus.Interactivity\DSharpPlus.Interactivity.csproj" />
       <ProjectReference Include="..\DSharpPlus\DSharpPlus.SlashCommands\DSharpPlus.SlashCommands.csproj" />
       <ProjectReference Include="..\DSharpPlus\DSharpPlus.VoiceNext\DSharpPlus.VoiceNext.csproj" />
       <ProjectReference Include="..\DSharpPlus\DSharpPlus\DSharpPlus.csproj" />
@@ -34,7 +35,6 @@
 
     <ItemGroup>
       <Folder Include="Migrations" />
-      <Folder Include="Modules" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Arc.Exceptions;
+﻿
 using ARC.Extensions;
-using DocumentFormat.OpenXml.ExtendedProperties;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using Serilog;
+
 
 namespace Arc.Schema;
 
@@ -70,7 +69,17 @@ public class ArcDbContext : DbContext
         await SaveChangesAsync();
     }
 
+    public List<UserNote> GetUserNotes(ulong userSnowflake, ulong guildSnowflake)
+    {
+        var notes = UserNotes.Where(x => x.UserSnowflake == (long)userSnowflake && x.GuildSnowflake == (long)guildSnowflake).ToList();
+        return notes;
+    }
 
+    public List<Appeal> GetNextAppeal(ulong userSnowflake)
+    {
+        return Appeals.ToList().Where(x => x.UserSnowflake == (long)userSnowflake).ToList();
+    }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql(new NpgsqlConnection(DbPath));
 
@@ -124,21 +133,15 @@ public class Modmail
             $"Modmail with user: {User}"
         );
 
-        ChannelSnowflake = (long)mailChannel.Id;
-        Uri avatarUri = new Uri(User.GetAvatarUrl(DSharpPlus.ImageFormat.Auto));
+        
         DiscordWebhook discordWebhook;
-        using (var httpClient = new HttpClient())
-        {
-            var uriWoQuery = avatarUri.GetLeftPart(UriPartial.Path);
-            var fileExt = Path.GetExtension(uriWoQuery);
-
-            var path = Path.Combine(Path.GetTempPath(), $"avatar{fileExt}");
-            var imageBytes = await httpClient.GetByteArrayAsync(avatarUri);
-            Stream filestream = new MemoryStream(imageBytes);
-            discordWebhook = await mailChannel.CreateWebhookAsync(User.Username, avatar: filestream);
-        }
+        discordWebhook = await mailChannel.CreateWebhookAsync(User.Username);
+        
+        ChannelSnowflake = (long)mailChannel.Id;
         WebhookSnowflake = (long)discordWebhook.Id;
-
+                
+        await Arc.ArcDbContext.Modmails.AddAsync(this);
+        await Arc.ArcDbContext.SaveChangesAsync();
         return true;
 
     }
@@ -233,8 +236,8 @@ public class Modmail
 
     public async Task SaveTranscript()
     {
-        File.Delete("./temp/transcript.html");
-        File.Copy("./template.html", "./temp/transcript.html");
+        File.Delete($"./temp/transcript-{ModmailId}.html");
+        File.Copy("./template.html", $"./temp/transcript-{ModmailId}.html");
 
         IReadOnlyList<DiscordMessage> msgs = await Channel.GetMessagesAsync(2000);
 
@@ -242,7 +245,7 @@ public class Modmail
         {
             var message = msgs[i];
 
-            await File.AppendAllTextAsync("./temp/transcript.html",
+            await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html",
 
             $@"
 
@@ -272,13 +275,13 @@ public class Modmail
 
         }
 
-        await File.AppendAllTextAsync("./temp/transcript.html", @"</div>
+        await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", @"</div>
                             </body>
                             </html>");
     }
 
     public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
-    public DiscordWebhook Webhook => Arc.ClientInstance.GetWebhookAsync((ulong) WebhookSnowflake).GetAwaiter().GetResult();
+    public DiscordWebhook Webhook => Channel.GetWebhooksAsync().GetAwaiter().GetResult()[0];
     public DiscordChannel Channel => Arc.ClientInstance.GetChannelAsync((ulong)ChannelSnowflake).GetAwaiter().GetResult();
     public DiscordGuild Guild => Arc.ClientInstance.GetGuildAsync(Channel.Guild.Id).GetAwaiter().GetResult();
     public DiscordMember Member => Guild.GetMemberAsync(User.Id).GetAwaiter().GetResult();
@@ -328,7 +331,7 @@ public class Appeal
     {
         
     }
-    
+    public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
 }
 
 [PrimaryKey("NoteId")]
@@ -337,13 +340,15 @@ public class UserNote
     
     public long NoteId { get; }
     public long UserSnowflake { get; set; }
+    public long GuildSnowflake { get; set; }
     public string Note { get; set; }
     public DateTime DateAdded { get; set; }
     public long AuthorSnowflake { get; set; }
 
-    public UserNote(long userSnowflake, string note, DateTime dateAdded, long authorSnowflake)
+    public UserNote(long guildSnowflake, long userSnowflake, string note, DateTime dateAdded, long authorSnowflake)
     {
 
+        GuildSnowflake = guildSnowflake;
         UserSnowflake = userSnowflake;
         Note = note;
         DateAdded = dateAdded;
@@ -356,6 +361,20 @@ public class UserNote
         
     }
 
+    public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
+    public DiscordGuild Guild => Arc.ClientInstance.GetGuildAsync((ulong)GuildSnowflake).GetAwaiter().GetResult();
+    public DiscordMember Member => Guild.GetMemberAsync(User.Id).GetAwaiter().GetResult();
+    public DiscordUser Author => Arc.ClientInstance.GetUserAsync((ulong)AuthorSnowflake).GetAwaiter().GetResult();
+    public DiscordMember AuthorMember => Guild.GetMemberAsync(Author.Id).GetAwaiter().GetResult();
+
+    internal DiscordEmbedBuilder CreateEmbedPage()
+    {
+        return new DiscordEmbedBuilder()
+            .WithAuthor($"{User} Note #{NoteId}", null, User.GetAvatarUrl(ImageFormat.Auto))
+            .WithDescription($"```{Note}```")
+            .WithTimestamp(DateAdded)
+            .WithFooter($"Note added by {Author.Username}#{Author.Discriminator}", Author.GetAvatarUrl(ImageFormat.Auto));
+    }
 }
 
 

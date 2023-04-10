@@ -14,3 +14,8 @@ public class ArcInitFailedException : ArcException
 {
     public ArcInitFailedException(string? message = null) : base($"ARC Initialization failed: {message ?? Empty}") { }
 }
+
+public class ArcModmailFailedException : ArcException
+{
+    public ArcModmailFailedException(string? message = null) : base($"ARC Modmail failed: {message ?? Empty}") { }
+}
