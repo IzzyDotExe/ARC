@@ -11,7 +11,7 @@ namespace ARC.Modules
     internal abstract class ArcModule : ApplicationCommandModule
     {
 
-        protected static bool _loaded = false;
+        protected bool _loaded = false;
         protected readonly ArcDbContext DbContext;
         protected readonly IServiceProvider ServiceProvider;
         protected readonly DiscordClient ClientInstance;
@@ -27,6 +27,7 @@ namespace ARC.Modules
 
             if (_loaded)
                 return;
+            
             RegisterEvents();
             Log.Logger.Information($"MODULE LOADED: {moduleName}");
             _loaded = true;
