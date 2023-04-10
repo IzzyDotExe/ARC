@@ -3,11 +3,9 @@ using ARC.Extensions;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Fluent.Architecture;
+
 using Serilog;
-using System;
-using System.Diagnostics.Tracing;
-using System.Linq.Dynamic.Core;
+
 using Arc.Exceptions;
 
 namespace Arc.Services;

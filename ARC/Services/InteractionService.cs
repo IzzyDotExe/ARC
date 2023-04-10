@@ -2,16 +2,9 @@
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using DSharpPlus.Interactivity.Extensions;
-using ARC.Modules;
-using DSharpPlus.EventArgs;
-using Fluent.Architecture.Extensions;
-using Serilog;
+
 
 namespace ARC.Services
 {

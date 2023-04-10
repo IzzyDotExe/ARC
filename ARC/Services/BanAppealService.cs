@@ -1,10 +1,10 @@
-﻿using System.Reflection.Metadata;
+﻿
 using Arc.Schema;
 using Arc.Services;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Serilog;
+
 
 namespace ARC.Services;
 

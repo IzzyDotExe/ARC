@@ -5,11 +5,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.SlashCommands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ARC.Extensions;
 
 namespace ARC.Modules
@@ -188,39 +183,6 @@ namespace ARC.Modules
                 await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, resp);
             }
         }
-        
-        /*
-         *
-         *            
-            if (eventArgs.Interaction.Data.CustomId.StartsWith("noteaddmodal.")) {
 
-                ulong userId = ulong.Parse(eventArgs.Interaction.Data.CustomId.Split('.')[1]);
-                var adder = eventArgs.Interaction.User;
-                var user = await client.GetUserAsync(userId);
-                String content = eventArgs.Values["usernote.content"];
-                DateTime dateAdded = DateTime.UtcNow;
-
-                await _dbservice.AddUserNote(content, userId, adder.Id, dateAdded);
-
-                ulong logChannel = ulong.Parse(_config.GetSection("usernotes:logchannel").Value);
-
-                DiscordChannel channel = await _client.GetChannelAsync(logChannel);
-
-                var embed = new DiscordEmbedBuilder()
-                                .WithAuthor($"A New Note was Added to {user.Username}#{user.Discriminator}", null, user.GetAvatarUrl(ImageFormat.Auto))
-                                .WithDescription($"```{content}```")
-                                .AddField("Added By:", $"{adder.Mention}", true)
-                                .AddField("Time added:", $"<t:{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}:R>", true)
-                                .WithFooter($"BillieBot v{_locale.TranslatableText("versionstring", 393165866285662208)} UserNotes", client.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
-                                .WithTimestamp(dateAdded)
-                                .WithColor(DiscordColor.Green)
-                                .Build();
-
-                await channel.SendMessageAsync(embed);
-
-                await eventArgs.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
-            }
-         */
-        
     }
 }

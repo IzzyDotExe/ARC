@@ -1,15 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Arc.Exceptions;
+﻿
 using ARC.Extensions;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.ExtendedProperties;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using Serilog;
+
 
 namespace Arc.Schema;
 
