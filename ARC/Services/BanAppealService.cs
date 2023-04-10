@@ -4,6 +4,7 @@ using Arc.Services;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Serilog;
 
 namespace ARC.Services;
 
@@ -208,18 +209,36 @@ public class BanAppealService : ArcService
                 customId:"banappeal.response.why", placeholder:"Explain why...",
                 required: true, style: TextInputStyle.Paragraph));
         
-        var appealGuildSnowflake = ulong.Parse(DbContext.Config[args.Interaction.Guild.Id]["mainserver"]);
+        ulong appealGuildSnowflake;
+        try
+        {
+             appealGuildSnowflake = ulong.Parse(DbContext.Config[args.Interaction.Guild.Id]["mainserver"]);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder()
+                    .WithContent("This guild is not setup for ban appeals! Please ask an admin to set the 'mainserver' key to the ID of your main server using /setconfig")
+                    .AsEphemeral());
+            return;
+        }
+        
         var guild = await ClientInstance.GetGuildAsync(appealGuildSnowflake);
 
         var bans = await guild.GetBansAsync();
 
         if (bans.All(x => x.User.Id != args.User.Id))
+        {
             await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder()
                     .WithContent($"You are not banned in {guild.Name}")
                     .AsEphemeral());
+            return;
+        }
+
             
         await args.Interaction.CreateResponseAsync(InteractionResponseType.Modal, resp);
 
     }
+    
 }

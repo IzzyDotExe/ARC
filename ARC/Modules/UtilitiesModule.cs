@@ -214,7 +214,7 @@ namespace ARC.Modules
             DiscordEmbed embedBuild = new DiscordEmbedBuilder()
                 .WithColor(DiscordColor.DarkRed)
                 .WithTitle("Ban Appeal")
-                .WithDescription("Welcome to the Billie Eilish ban appeal server.\n\nTo open a ban appeal, please click the button below.")
+                .WithDescription($"Welcome to {ctx.Guild.Name}.\n\nTo open a ban appeal, please click the button below.")
                 .WithThumbnail("https://www.pngkey.com/png/full/382-3821512_tak-icon-hammer-01-hammer.png")
                 .Build();
 
