@@ -49,7 +49,8 @@ public class BanAppealService : ArcService
 
             var buttons = new List<DiscordButtonComponent>() {
                 new DiscordButtonComponent(ButtonStyle.Success, $"banappeal.unban.{appeal.AppealId}", "Unban", false, new DiscordComponentEmoji("🔓")),
-                new DiscordButtonComponent(ButtonStyle.Danger, $"banappeal.deny.{appeal.AppealId}", "Deny", false, new DiscordComponentEmoji("🔨"))
+                new DiscordButtonComponent(ButtonStyle.Danger, $"banappeal.deny.{appeal.AppealId}", "Deny", false, new DiscordComponentEmoji("🔨")),
+                new DiscordButtonComponent(ButtonStyle.Primary, $"banappeal.mail.{appeal.AppealId}", "Mail", false, new DiscordComponentEmoji("✉"))
             };
 
             var response = new DiscordMessageBuilder()
@@ -94,7 +95,48 @@ public class BanAppealService : ArcService
         
         if (args.Id.Contains("banappeal.unban"))
             await HandleAppealAccept(args);
+
+        if (args.Id.Contains("banappeal.mail"))
+            await HandleAppealMail(args);
+
+    }
+
+    private async Task HandleAppealMail(ComponentInteractionCreateEventArgs args)
+    {
+                
+        var appealId = long.Parse(args.Id.Split('.')[2]);
+        var appeals = DbContext.Appeals.ToList().Where(x => x.AppealId == appealId).ToList();
         
+        var appealGuildSnowflake = ulong.Parse(DbContext.Config[args.Interaction.Guild.Id]["mainserver"]);
+        var guild = await ClientInstance.GetGuildAsync(appealGuildSnowflake);
+        
+        if (!appeals.Any())
+        {
+            await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder()
+                    .WithContent($"ERROR: appeal not found, you can delete it.")
+                    .AsEphemeral());
+            return;
+        }
+        
+        var appeal = appeals[0];
+
+        Modmail modmail = new Modmail(appeal.User.Id, args.Guild);
+
+        var session  = await modmail.CreateSession();
+
+        if (!session)
+        {
+            await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder()
+                    .WithContent($"ERROR: modmail is misconfigured, could not start session!")
+                    .AsEphemeral());
+            return;
+        }
+
+        await modmail.SendUserSystem(@$"Hello! You're receiving this modmail because you appealed your ban in {guild.Name}
+The moderators would like to have a chat about your appeal. You will recieve messsages shortly.");
+        await modmail.SendModmailMenu();
     }
 
     private async Task HandleAppealAccept(ComponentInteractionCreateEventArgs args)
@@ -102,13 +144,16 @@ public class BanAppealService : ArcService
         
         var appealId = long.Parse(args.Id.Split('.')[2]);
         var appeals = DbContext.Appeals.ToList().Where(x => x.AppealId == appealId).ToList();
-        
+
         if (!appeals.Any())
+        {
             await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder()
                     .WithContent($"ERROR: appeal not found, you can delete it.")
                     .AsEphemeral());
-        
+            return;
+        }
+
         var appeal = appeals[0];
         
         var appealGuildSnowflake = ulong.Parse(DbContext.Config[args.Interaction.Guild.Id]["mainserver"]);

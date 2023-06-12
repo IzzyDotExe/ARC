@@ -108,7 +108,7 @@ public class Modmail
         UserSnowflake = (long)userSnowflake;
         _guildCreate = guild;
     }
-
+    
     public async Task<bool> CreateSession()
     {
 
