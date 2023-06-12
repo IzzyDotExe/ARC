@@ -4,6 +4,7 @@ using Arc.Services;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Exceptions;
 
 
 namespace ARC.Services;
@@ -225,9 +226,11 @@ public class BanAppealService : ArcService
         
         var guild = await ClientInstance.GetGuildAsync(appealGuildSnowflake);
 
-        var bans = await guild.GetBansAsync();
-
-        if (bans.All(x => x.User.Id != args.User.Id))
+        try
+        {
+            var ban = guild.GetBanAsync(args.User.Id);
+        }
+        catch (NotFoundException ex)
         {
             await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder()
@@ -236,7 +239,6 @@ public class BanAppealService : ArcService
             return;
         }
 
-            
         await args.Interaction.CreateResponseAsync(InteractionResponseType.Modal, resp);
 
     }
