@@ -304,9 +304,7 @@ public class Modmail
                     href=#chatlog__message-container-{message.Id}>{message.Timestamp}</a></span>
                     </div>
                     <div class='chatlog__content chatlog__markdown'><span class=chatlog__markdown-preserve>{message.Content}</span></div>
-                    </div>
-                    </div>
-                    </div>
+
 
                 ");
             else 
@@ -318,10 +316,30 @@ public class Modmail
                     <div class=chatlog__header>
                     </div>
                     <div class='chatlog__content chatlog__markdown'><span class=chatlog__markdown-preserve>{message.Content}</span></div>
-                    </div>
-                    </div>
-                    </div>
 
+                ");
+
+
+            if (message.Attachments.Count > 0)
+            {
+                foreach (var att in message.Attachments)   
+                {
+                    await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+           
+                    <div class=chatlog__attachment><a
+                            href={att.Url}>
+                        <img class=chatlog__attachment-media
+                             src={att.Url}
+                             alt='Image attachment' title='Image: {att.FileName} ({att.FileSize})' loading=lazy> </a></div>
+
+                    ");
+                }
+            }
+            
+            await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+                    </div>
+                    </div>
+                    </div>
                 ");
         }
 
