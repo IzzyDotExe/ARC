@@ -4,6 +4,7 @@ using Arc.Services;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Exceptions;
 
 
 namespace ARC.Services;
@@ -270,9 +271,11 @@ The moderators would like to have a chat about your appeal. You will recieve mes
         
         var guild = await ClientInstance.GetGuildAsync(appealGuildSnowflake);
 
-        var bans = await guild.GetBansAsync();
-
-        if (bans.All(x => x.User.Id != args.User.Id))
+        try
+        {
+            var ban = guild.GetBanAsync(args.User.Id);
+        }
+        catch (NotFoundException ex)
         {
             await args.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                 new DiscordInteractionResponseBuilder()
@@ -281,7 +284,6 @@ The moderators would like to have a chat about your appeal. You will recieve mes
             return;
         }
 
-            
         await args.Interaction.CreateResponseAsync(InteractionResponseType.Modal, resp);
 
     }

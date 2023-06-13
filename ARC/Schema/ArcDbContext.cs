@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
 using ARC.Extensions;
 
 using DSharpPlus;
@@ -241,43 +242,114 @@ public class Modmail
 
         IReadOnlyList<DiscordMessage> msgs = await Channel.GetMessagesAsync(2000);
 
+        await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+            <div class=preamble>
+            <div class=preamble__guild-icon-container><img class=preamble__guild-icon
+                                                        src='{Guild.GetIconUrl(ImageFormat.Auto)}''
+            alt='Guild icon' loading=lazy></div>
+            <div class=preamble__entries-container>
+            <div class=preamble__entry>{Guild.Name}</div>
+            <div class=preamble__entry>{Channel.Name}</div>
+            </div>
+            </div>
+        ");
+        DiscordUser? author = null;
         for (int i = (msgs.Count - 1); i >= 0; i--)
         {
             var message = msgs[i];
+            var newauthor = !message.Author.Equals(author);
+
+            if (newauthor)
+            {
+                author = message.Author;
+                await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+                    </div>
+                    <div class=chatlog__message-group>
+                ");
+            }
 
             await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html",
-
-            $@"
-
-                            <div class='discord-message'>
-                            <div class='discord-author-avatar'><img src='{message.Author.GetAvatarUrl(ImageFormat.Auto)}' alt='{message.Author.Username}'></div>
-                            <div class='discord-message-content'>
-                                <div><span class='discord-author-info'><span class='discord-author-username' style=''>
-                                    {message.Author.Username}
-
-                                
-
-                                    </span></span> <span class='discord-message-timestamp'>
-                                    {message.Timestamp.ToString()}
-                                    </span>
-                                </div>
-                                <div class='discord-message-body'>
-                                    <!---->
-                                    {message.Content}
-                                    <!---->
-                                </div>
-                            </div>
-                        </div>
-                    
+                $@"
+                    <div id=chatlog__message-container-{message.Id} class=chatlog__message-container
+                    data-message-id={message.Id}>
+                    <div class=chatlog__message>
+                    <div class=chatlog__message-aside>
                     "
-
             );
 
+            if (newauthor)
+            {
+                await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html",
+                    $@"
+                        <img class=chatlog__avatar
+                        src='{author.GetAvatarUrl(ImageFormat.Auto)}'
+                        alt=Avatar loading=lazy></div>
+                    "
+                );
+            }
+            else
+            {
+                await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html",
+                    $@"<div class=chatlog__short-timestamp title='{message.Timestamp}'>{message.Timestamp.Hour}:{message.Timestamp.Minute}</div></div>"
+                );
+            }
+        
+            if (newauthor)
+
+                await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+           
+                    <div class=chatlog__message-primary>
+                    <div class=chatlog__header><span class=chatlog__author style=color:rgb(155,89,182) title={author.Username}
+                    data-user-id={author.Id}>{author.Username}</span> <span class=chatlog__timestamp><a
+                    href=#chatlog__message-container-{message.Id}>{message.Timestamp}</a></span>
+                    </div>
+                    <div class='chatlog__content chatlog__markdown'><span class=chatlog__markdown-preserve>{message.Content}</span></div>
+
+
+                ");
+            else 
+                
+
+                await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+           
+                    <div class=chatlog__message-primary>
+                    <div class=chatlog__header>
+                    </div>
+                    <div class='chatlog__content chatlog__markdown'><span class=chatlog__markdown-preserve>{message.Content}</span></div>
+
+                ");
+
+
+            if (message.Attachments.Count > 0)
+            {
+                foreach (var att in message.Attachments)   
+                {
+                    await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+           
+                    <div class=chatlog__attachment><a
+                            href={att.Url}>
+                        <img class=chatlog__attachment-media
+                             src={att.Url}
+                             alt='Image attachment' title='Image: {att.FileName} ({att.FileSize})' loading=lazy> </a></div>
+
+                    ");
+                }
+            }
+            
+            await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"
+                    </div>
+                    </div>
+                    </div>
+                ");
         }
 
-        await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", @"</div>
-                            </body>
-                            </html>");
+        await File.AppendAllTextAsync($"./temp/transcript-{ModmailId}.html", $@"</div>
+        <div class=postamble>
+        <div class=postamble__entry>Saved {MessageCount} message(s)</div>
+        </div>
+        </body>
+        </html>"
+        );
     }
 
     public DiscordUser User => Arc.ClientInstance.GetUserAsync((ulong)UserSnowflake).GetAwaiter().GetResult();
@@ -285,7 +357,7 @@ public class Modmail
     public DiscordChannel Channel => Arc.ClientInstance.GetChannelAsync((ulong)ChannelSnowflake).GetAwaiter().GetResult();
     public DiscordGuild Guild => Arc.ClientInstance.GetGuildAsync(Channel.Guild.Id).GetAwaiter().GetResult();
     public DiscordMember Member => Guild.GetMemberAsync(User.Id).GetAwaiter().GetResult();
-
+    [NotMapped] public int MessageCount => Channel.GetMessagesAsync().GetAwaiter().GetResult().Count;
     private Modmail()
     {
         
