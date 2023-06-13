@@ -1,9 +1,11 @@
 ﻿{
+  
   "db" : {
     "dbstring" : ""
   },
   "discord": {
     "token": "",
     "guild": ""
-  }
+  },
+  
 }
