@@ -83,7 +83,7 @@ namespace ARC.Modules
                 .AddField("Deleted By:", $"{args.User.Mention}", true)
                 .AddField("Time added:", $"<t:{new DateTimeOffset(note.DateAdded).ToUnixTimeSeconds()}:R>", true)
                 .AddField("Time deleted:", $"<t:{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}:R>", true)
-                .WithFooter($"BillieBot v{ClientInstance.ClientVersion} UserNotes", ClientInstance.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
+                .WithFooter($"ARC v{ClientInstance.ClientVersion} UserNotes", ClientInstance.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
                 .WithTimestamp(DateTime.UtcNow)
                 .WithColor(DiscordColor.Red)
                 .Build();
@@ -156,7 +156,7 @@ namespace ARC.Modules
                     .WithDescription($"```{content}```")
                     .AddField("Added By:", $"{author.Mention}", true)
                     .AddField("Time added:", $"<t:{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}:R>", true)
-                    .WithFooter($"BillieBot v{ClientInstance.ClientVersion} UserNotes", ClientInstance.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
+                    .WithFooter($"ARC v{ClientInstance.ClientVersion} UserNotes", ClientInstance.CurrentUser.GetAvatarUrl(ImageFormat.Auto))
                     .WithTimestamp(dateadded)
                     .WithColor(DiscordColor.Green)
                     .Build();
