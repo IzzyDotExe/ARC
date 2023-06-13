@@ -922,39 +922,50 @@
     </svg>
 
 <body>
-
-<!--<div class="chatlog">-->
-<!--    <div class=chatlog__message-group>-->
-<!--        <div id=chatlog__message-container-{{MESSAGE ID}} class=chatlog__message-container-->
-<!--             data-message-id={{MESSAGE ID}}>-->
-<!--            <div class=chatlog__message>-->
-<!--                <div class=chatlog__message-aside><img class=chatlog__avatar-->
-<!--                                                       src="{{SENDER AVATAR}}}"-->
-<!--                                                       alt=Avatar loading=lazy></div>-->
-<!--                <div class=chatlog__message-primary>-->
-<!--                    <div class=chatlog__header><span class=chatlog__author style=color:rgb(155,89,182) title={{SENDER USERNAME}}-->
-<!--                                                     data-user-id={{SENDER ID}}>{{SENDER DISPLAYNAME}}</span> <span class=chatlog__timestamp><a-->
-<!--                            href=#chatlog__message-container-1117879988805439498>{{TIMESTAMP}}</a></span>-->
-<!--                    </div>-->
-<!--                    <div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>{{MESSAGE CONTENT}}</span></div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div id=chatlog__message-container-{{MESSAGE ID}} class=chatlog__message-container-->
-<!--             data-message-id={{MESSAGE ID}}}>-->
-<!--            <div class=chatlog__message>-->
-<!--                <div class=chatlog__message-aside>-->
-<!--                    <div class=chatlog__short-timestamp title="06/12/2023 2:16 PM">{{SHORT TIMESTAMP}}</div>-->
-<!--                </div>-->
-<!--                <div class=chatlog__message-primary>-->
-<!--                    <div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>{{MESSAGE CONTENT}}</span></div>-->
-<!--                    <div class=chatlog__attachment><a-->
-<!--                            href={{IMAGE URL}}>-->
-<!--                        <img class=chatlog__attachment-media-->
-<!--                             src={{IMAGE URL}}-->
-<!--                             alt="Image attachment" title="Image: 0.png (1.26 KB)" loading=lazy> </a></div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class=preamble>
+    <div class=preamble__guild-icon-container><img class=preamble__guild-icon
+                                                   src="{{SERVER ICON}}"
+                                                   alt="Guild icon" loading=lazy></div>
+    <div class=preamble__entries-container>
+        <div class=preamble__entry>{{ SERVER NAME }}</div>
+        <div class=preamble__entry>{{ CHANNEL }}</div>
+    </div>
+</div>
+<div class="chatlog">
+    <div class=chatlog__message-group>
+        <div id=chatlog__message-container-{{MESSAGE ID}} class=chatlog__message-container
+             data-message-id={{MESSAGE ID}}>
+            <div class=chatlog__message>
+                <div class=chatlog__message-aside><img class=chatlog__avatar
+                                                       src="{{SENDER AVATAR}}}"
+                                                       alt=Avatar loading=lazy></div>
+                <div class=chatlog__message-primary>
+                    <div class=chatlog__header><span class=chatlog__author style=color:rgb(155,89,182) title={{SENDER USERNAME}}
+                                                     data-user-id={{SENDER ID}}>{{SENDER DISPLAYNAME}}</span> <span class=chatlog__timestamp><a
+                            href=#chatlog__message-container-1117879988805439498>{{TIMESTAMP}}</a></span>
+                    </div>
+                    <div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>{{MESSAGE CONTENT}}</span></div>
+                </div>
+            </div>
+        </div>
+        <div id=chatlog__message-container-{{MESSAGE ID}} class=chatlog__message-container
+             data-message-id={{MESSAGE ID}}}>
+            <div class=chatlog__message>
+                <div class=chatlog__message-aside>
+                    <div class=chatlog__short-timestamp title="06/12/2023 2:16 PM">{{SHORT TIMESTAMP}}</div>
+                </div>
+                <div class=chatlog__message-primary>
+                    <div class="chatlog__content chatlog__markdown"><span class=chatlog__markdown-preserve>{{MESSAGE CONTENT}}</span></div>
+                    <div class=chatlog__attachment><a
+                            href={{IMAGE URL}}>
+                        <img class=chatlog__attachment-media
+                             src={{IMAGE URL}}
+                             alt="Image attachment" title="Image: 0.png (1.26 KB)" loading=lazy> </a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class=postamble>
+    <div class=postamble__entry>Exported 5 message(s)</div>
+</div>
