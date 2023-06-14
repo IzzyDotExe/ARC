@@ -17,6 +17,35 @@ public class ModMailService : ArcService
     {
         ClientInstance.MessageCreated += ClientInstanceOnMessageCreated;
         ClientInstance.ComponentInteractionCreated += ClientInstance_ComponentInteractionCreated;
+        ClientInstance.ModalSubmitted += ClientInstanceOnModalSubmitted;
+    }
+
+    private async Task ClientInstanceOnModalSubmitted(DiscordClient sender, ModalSubmitEventArgs args)
+    {
+                
+        var eventId = args.Interaction.Data.CustomId;
+
+        if (!eventId.StartsWith("modmail"))
+            return;
+        
+        var eventAction = ClientInstance.GetEventAction(eventId);
+
+        if (eventAction == null)
+            return;
+
+        var modmail = DbContext.Modmails.Where(x => x.ModmailId == long.Parse(eventAction.Value.Item2)).First();
+
+        switch (eventAction.Value.Item1)
+        {
+            case "modmail.ban.confirm":
+                await SaveModMailSession(modmail, args.Interaction.User);
+                await CloseModMailSession(modmail, args.Interaction.User);
+                await BanMailUser(modmail);
+                break;
+        }
+
+        await args.Interaction.CreateResponseAsync(InteractionResponseType.Pong, new DiscordInteractionResponseBuilder());
+
     }
 
     private async Task ClientInstance_ComponentInteractionCreated(DiscordClient sender, ComponentInteractionCreateEventArgs args)
@@ -44,23 +73,16 @@ public class ModMailService : ArcService
                 await SaveModMailSession(modmail, args.Interaction.User);
                 await CloseModMailSession(modmail, args.Interaction.User);
                 break;
-/*
-            case "modmail.ban.confirm":
-                await SaveModMailSession(modmail);
-                await CloseModMailSession(modmail);
-                await BanMailUser(modmail);
-                break;
 
             case "modmail.ban":
-                await ConfirmBanUser(args.Interaction);
+                await ConfirmBanUser(modmail, args.Interaction);
                 break;
-*/        
+        
             default:
                 break;
 
         }
-
-
+        
     }
 
     private async Task ClientInstanceOnMessageCreated(DiscordClient sender, MessageCreateEventArgs e)
@@ -190,21 +212,26 @@ public class ModMailService : ArcService
         await transcrpt.SendMessageAsync(embed);
 
     }
-
-    /*
-        private async Task BanMailUser(Modmail modmail)
+    
+    private async Task BanMailUser(Modmail modmail)
+    {
+        await modmail.Member.BanAsync();
+    }
+    
+    private async Task ConfirmBanUser(Modmail modmail, DiscordInteraction interaction)
+    {
+        
+        var resp = new DiscordInteractionResponseBuilder()
         {
-            await modmail.Member.BanAsync();
-        }
+            Title = "Are you sure you want to ban this user?",
+            CustomId = $"modmail.ban.confirm.{modmail.ModmailId}",
 
+        }.AddComponents(new TextInputComponent(label: "Which moderator banned you?",
+            customId: $"banappeal.response.mod",
+            placeholder: "Type yes",
+            required: false, max_length: 30));
+        await interaction.CreateResponseAsync(InteractionResponseType.Modal, resp);
 
-        private async Task ConfirmBanUser(DiscordInteraction interaction)
-        {
-            await interaction.CreateResponseAsync(InteractionResponseType.Modal, new()
-            {
-                Content = "Are you sure you want to ban this user?"
-            });
-        }
-    */
-
+    }
+    
 }
