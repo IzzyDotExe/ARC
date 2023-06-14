@@ -86,7 +86,7 @@ public class ModMailService : ArcService
              * a session.
             */
 
-            if (!e.Message.Content.Contains("modmail"))
+            if (!e.Message.Content.Contains("modmail") && !e.Message.Content.Contains("mod") && !e.Message.Content.Contains("mail"))
                 return;
 
             // TODO: INSERT SERVER PICKING MECHANISM HERE
