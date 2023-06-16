@@ -38,9 +38,10 @@ public class ModMailService : ArcService
         switch (eventAction.Value.Item1)
         {
             case "modmail.ban.confirm":
+                var member = modmail.Member;
                 await SaveModMailSession(modmail, args.Interaction.User);
                 await CloseModMailSession(modmail, args.Interaction.User);
-                await BanMailUser(modmail);
+                await BanMailUser(member, args.Values["modmail.ban.reason"]);
                 break;
         }
 
@@ -213,9 +214,18 @@ public class ModMailService : ArcService
 
     }
     
-    private async Task BanMailUser(Modmail modmail)
+    private async Task BanMailUser(DiscordMember member, string reason)
     {
-        await modmail.Member.BanAsync();
+        var Author = Arc.ClientInstance.CurrentUser;
+
+        var embed = new DiscordEmbedBuilder()
+            .WithModmailStyle()
+            .WithAuthor(Author.Username, "", Author.AvatarUrl)
+            .WithDescription($"You have been banned in {member.Guild.Name} for: ``{reason}``")
+            .Build();
+
+        await member.SendMessageAsync(embed);
+        await member.BanAsync(reason: "Banned during modmail for: "+reason);
     }
     
     private async Task ConfirmBanUser(Modmail modmail, DiscordInteraction interaction)
@@ -223,13 +233,15 @@ public class ModMailService : ArcService
         
         var resp = new DiscordInteractionResponseBuilder()
         {
+            
             Title = "Are you sure you want to ban this user?",
-            CustomId = $"modmail.ban.confirm.{modmail.ModmailId}",
+            CustomId = $"modmail.ban.confirm.{modmail.ModmailId}"
 
-        }.AddComponents(new TextInputComponent(label: "Which moderator banned you?",
-            customId: $"banappeal.response.mod",
-            placeholder: "Type yes",
-            required: false, max_length: 30));
+        }.AddComponents(new TextInputComponent(label: "Reason",
+            customId: $"modmail.ban.reason",
+            placeholder: "reason",
+            required: true, max_length: 30));
+        
         await interaction.CreateResponseAsync(InteractionResponseType.Modal, resp);
 
     }
