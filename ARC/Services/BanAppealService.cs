@@ -137,7 +137,7 @@ public class BanAppealService : ArcService
 
         await modmail.SendUserSystem(@$"Hello! You're receiving this modmail because you appealed your ban in {guild.Name}
 The moderators would like to have a chat about your appeal. You will recieve messsages shortly.");
-        await modmail.SendModmailMenu();
+        await modmail.SendModmailMenu(appeal);
     }
 
     private async Task HandleAppealAccept(ComponentInteractionCreateEventArgs args)
