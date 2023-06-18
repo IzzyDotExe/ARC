@@ -214,19 +214,33 @@ public class Modmail
 
     }
 
-    public async Task SendModmailMenu()
+    public async Task SendModmailMenu(Appeal? appeal = null)
     {
-
-        var embed = new DiscordEmbedBuilder()
+        
+        var embed = appeal == null? 
+            new DiscordEmbedBuilder()
                     .WithModmailStyle()
                     .WithTitle("Mod Mail")
-                    .WithDescription($"A Mod Mail session was opened by {Member.Mention}");
+                    .WithDescription($"A Mod Mail session was opened by {Member.Mention}")
+            :
+            new DiscordEmbedBuilder()
+                .WithModmailStyle()
+                .WithTitle("Mod Mail")
+                .WithDescription($"Modmail for {Member.Mention}'s ban appeal");
 
-        var buttons = new List<DiscordButtonComponent>() {
+        var buttons = appeal == null? 
+            new List<DiscordButtonComponent>() {
                                 new DiscordButtonComponent(ButtonStyle.Secondary, $"modmail.save.{ModmailId}", "Save and Close", emoji: new DiscordComponentEmoji("📝")),
                                 new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.close.{ModmailId}", "Close", emoji: new DiscordComponentEmoji("🔒")),
-                                //new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.ban.{ModmailId}", "Ban", emoji: new DiscordComponentEmoji("🔨"))
-                            };
+                                new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.ban.{ModmailId}", "Ban", emoji: new DiscordComponentEmoji("🔨"))
+            }
+            :
+            new List<DiscordButtonComponent>() {
+                new DiscordButtonComponent(ButtonStyle.Secondary, $"modmail.save.{ModmailId}", "Save and Close", emoji: new DiscordComponentEmoji("📝")),
+                new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.close.{ModmailId}", "Close", emoji: new DiscordComponentEmoji("🔒")),
+               // new DiscordButtonComponent(ButtonStyle.Success, $"banappeal.unban.{appeal.AppealId}", "Unban", false, new DiscordComponentEmoji("🔓")),
+               // new DiscordButtonComponent(ButtonStyle.Danger, $"banappeal.deny.{appeal.AppealId}", "Deny", false, new DiscordComponentEmoji("🔨")),
+            };
 
         DiscordMessageBuilder message = new DiscordMessageBuilder()
                                 .WithEmbed(embed)
