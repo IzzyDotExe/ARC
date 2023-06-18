@@ -211,7 +211,7 @@ The moderators would like to have a chat about your appeal. You will recieve mes
         var guild = await ClientInstance.GetGuildAsync(appealGuildSnowflake);
 
         var msg = args.Message.Embeds[0];
-
+        
         var mbuilder= new DiscordInteractionResponseBuilder()
             .AddEmbed(new DiscordEmbedBuilder(msg)
                 .WithColor(DiscordColor.Red)

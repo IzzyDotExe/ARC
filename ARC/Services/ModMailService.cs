@@ -38,6 +38,7 @@ public class ModMailService : ArcService
         switch (eventAction.Value.Item1)
         {
             case "modmail.ban.confirm":
+                await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().WithContent("Banning user..."));
                 var member = modmail.Member;
                 await SaveModMailSession(modmail, args.Interaction.User);
                 await CloseModMailSession(modmail, args.Interaction.User);

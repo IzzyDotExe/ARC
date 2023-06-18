@@ -238,8 +238,8 @@ public class Modmail
             new List<DiscordButtonComponent>() {
                 new DiscordButtonComponent(ButtonStyle.Secondary, $"modmail.save.{ModmailId}", "Save and Close", emoji: new DiscordComponentEmoji("📝")),
                 new DiscordButtonComponent(ButtonStyle.Danger, $"modmail.close.{ModmailId}", "Close", emoji: new DiscordComponentEmoji("🔒")),
-                new DiscordButtonComponent(ButtonStyle.Success, $"banappeal.unban.{appeal.AppealId}", "Unban", false, new DiscordComponentEmoji("🔓")),
-                new DiscordButtonComponent(ButtonStyle.Danger, $"banappeal.deny.{appeal.AppealId}", "Deny", false, new DiscordComponentEmoji("🔨")),
+               // new DiscordButtonComponent(ButtonStyle.Success, $"banappeal.unban.{appeal.AppealId}", "Unban", false, new DiscordComponentEmoji("🔓")),
+               // new DiscordButtonComponent(ButtonStyle.Danger, $"banappeal.deny.{appeal.AppealId}", "Deny", false, new DiscordComponentEmoji("🔨")),
             };
 
         DiscordMessageBuilder message = new DiscordMessageBuilder()
