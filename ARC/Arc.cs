@@ -17,6 +17,7 @@ namespace Arc;
 public class Arc
 {
     
+    
     private static DiscordClient? _clientInstance;
     private static IServiceProvider? _serviceProvider;
     private static ArcDbContext? _arcDbContext;
