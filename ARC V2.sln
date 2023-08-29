@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSharpPlus.Rest", "DSharpPl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSharpPlus.SlashCommands", "DSharpPlus\DSharpPlus.SlashCommands\DSharpPlus.SlashCommands.csproj", "{F71780C1-61A2-4057-BDCB-79CEBB075DB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSharpPlus.Test", "DSharpPlus\DSharpPlus.Test\DSharpPlus.Test.csproj", "{1A6A94AE-9F80-4C1B-AF97-CDB905E1FE14}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSharpPlus.VoiceNext", "DSharpPlus\DSharpPlus.VoiceNext\DSharpPlus.VoiceNext.csproj", "{D59FA066-4E6E-4403-8B16-FB0F6EB174FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSharpPlus.Lavalink", "DSharpPlus\DSharpPlus.Lavalink\DSharpPlus.Lavalink.csproj", "{23F692C5-4A37-48A7-9EC8-7AA6A1EE1B91}"
