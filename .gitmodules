@@ -1,0 +1,4 @@
+[submodule "DSharpPlus"]
+    path = DSharpPlus
+    url = https://github.com/IzzyDotExe/DSharpPlus/
+    branch = ARCV3
